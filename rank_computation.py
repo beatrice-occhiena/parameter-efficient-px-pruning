@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader
 from torchvision.models import vit_b_32
 import torch.nn as nn
 from torchvision.datasets import CIFAR10, CIFAR100
+from datasets.TinyImageNet.dataset import TINYIMAGENET
 from torchvision import transforms
 from argparse import ArgumentParser
 
@@ -114,6 +115,23 @@ def load_cifar100(preprocess_train):
 
   return num_classes, train_loader
 
+def load_tinyImageNet(preprocess_train):
+  # Load Tiny-ImageNet & transform the images
+  """
+  official openai class PreprocessCfg for data transformation:
+    size: Union[int, Tuple[int, int]] = 224
+    mode: str = 'RGB'
+    mean: Tuple[float, ...] = OPENAI_DATASET_MEAN
+    std: Tuple[float, ...] = OPENAI_DATASET_STD
+    interpolation: str = 'bicubic'
+    resize_mode: str = 'shortest'
+    fill_color: int = 0
+  """
+  train_data = TINYIMAGENET(root='./data', train=True, download=True, transform=preprocess_train)
+  train_loader = DataLoader(train_data, batch_size=64, shuffle=True)
+  num_classes = 200
+
+  return num_classes, train_loader
   
 def compute_grad_ranks(vision_model, num_classes, args):
 
@@ -149,8 +167,8 @@ models = {
 }
 datasets = {
   'cifar10': load_cifar10,
-  'cifar100': load_cifar100
-  #'tiny': load_tinyImageNet
+  'cifar100': load_cifar100,
+  'tiny': load_tinyImageNet
 }
 
 # EXECUTE #
