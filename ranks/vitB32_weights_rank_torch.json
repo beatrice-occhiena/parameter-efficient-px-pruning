@@ -6,6 +6,13 @@
     ],
     "rank": 96
   },
+  "encoder.pos_embedding": {
+    "size": [
+      50,
+      768
+    ],
+    "rank": 50
+  },
   "encoder.layers.encoder_layer_0.self_attention.in_proj_weight": {
     "size": [
       2304,

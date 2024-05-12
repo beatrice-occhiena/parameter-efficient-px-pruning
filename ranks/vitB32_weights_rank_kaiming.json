@@ -6,6 +6,13 @@
     ],
     "rank": 96
   },
+  "encoder.pos_embedding": {
+    "size": [
+      50,
+      768
+    ],
+    "rank": 50
+  },
   "encoder.layers.encoder_layer_0.self_attention.in_proj_weight": {
     "size": [
       2304,
@@ -74,7 +81,7 @@
       768,
       768
     ],
-    "rank": 767
+    "rank": 768
   },
   "encoder.layers.encoder_layer_2.mlp.0.weight": {
     "size": [
@@ -158,7 +165,7 @@
       768,
       768
     ],
-    "rank": 768
+    "rank": 767
   },
   "encoder.layers.encoder_layer_5.mlp.0.weight": {
     "size": [
@@ -186,7 +193,7 @@
       768,
       768
     ],
-    "rank": 767
+    "rank": 768
   },
   "encoder.layers.encoder_layer_6.mlp.0.weight": {
     "size": [
@@ -214,7 +221,7 @@
       768,
       768
     ],
-    "rank": 768
+    "rank": 767
   },
   "encoder.layers.encoder_layer_7.mlp.0.weight": {
     "size": [
@@ -242,7 +249,7 @@
       768,
       768
     ],
-    "rank": 768
+    "rank": 767
   },
   "encoder.layers.encoder_layer_8.mlp.0.weight": {
     "size": [
@@ -326,7 +333,7 @@
       768,
       768
     ],
-    "rank": 767
+    "rank": 768
   },
   "encoder.layers.encoder_layer_11.mlp.0.weight": {
     "size": [
