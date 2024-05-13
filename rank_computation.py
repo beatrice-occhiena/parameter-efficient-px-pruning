@@ -24,20 +24,32 @@ parser.add_argument('--dataset', type=str, help='cifar10, cifar100 or tiny', def
 
 def kaiming_init(model):
   # Kaiming initialization
-  for m in model.modules():
-    if isinstance(m, (nn.Conv2d, nn.Linear)):
-      nn.init.kaiming_normal_(m.weight)
-      if m.bias is not None:
-        nn.init.constant_(m.bias, 0)
-    elif isinstance(m, nn.LayerNorm):
-      nn.init.constant_(m.weight, 1)
-      nn.init.constant_(m.bias, 0)
+  for name, param in model.named_parameters():
+    if "ln_" in name: # Layer Normalization
+      if "weight" in name:
+        nn.init.constant_(param, 1)
+      if "bias" in name:
+        nn.init.constant_(param, 0)
+    elif "weight" in name:
+      nn.init.kaiming_normal_(param)
+    elif "bias" in name:
+      nn.init.constant_(param, 0)
+    elif "class" in name: # Class Embedding
+      nn.init.constant_(param, 1)
+    else:
+      nn.init.kaiming_normal_(param)
 
 def vitB32_init_kaiming():
   # VIT-B/32 INITIALIZED from scratch with Kaiming init
-  model = vit_b_32()
-  kaiming_init(model)
-  return (model, None, None)
+  # model = vit_b_32()
+  # kaiming_init(model)
+  # return (model, None, None)
+  clip_model, preprocess_train, preprocess_val = open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai')
+  vision_model = clip_model.visual
+  print("pre_init:", vision_model.proj[2,3], vision_model.proj[4,5])
+  kaiming_init(vision_model)
+  print("post_init:", vision_model.proj[2,3],  vision_model.proj[4,5])
+  return (vision_model, preprocess_train, preprocess_val)
 
 def vitB32_pretrained_torch():
   # VIT-B/32 PRETRAINED from standard torchvision.models
@@ -140,15 +152,15 @@ def compute_grad_ranks(vision_model, num_classes, args):
   head = nn.Linear(class_embedding_size, num_classes)
   kaiming_init(head)
   model = nn.Sequential(vision_model, head)
-  #model.to('cuda')!!! UPGARDE NVIDIA
+  model = model.to('cuda')
 
   # Loss function
   loss_fn = nn.CrossEntropyLoss()
 
   # Check the rank of the gradient matrices after 1 forward pass of all data in the dataset
   for data, labels in tqdm(train_loader):
-    #data.to('cuda')
-    #labels.to('cuda')
+    data = data.to('cuda')
+    labels = labels.to('cuda')
     
     # FORWARD PASS ->
     logits = model(data)

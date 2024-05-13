@@ -1,358 +1,358 @@
 {
-  "conv_proj.weight": {
-    "size": [
-      24576,
-      96
-    ],
-    "rank": 96
-  },
-  "encoder.pos_embedding": {
+  "positional_embedding": {
     "size": [
       50,
       768
     ],
     "rank": 50
   },
-  "encoder.layers.encoder_layer_0.self_attention.in_proj_weight": {
+  "proj": {
+    "size": [
+      768,
+      512
+    ],
+    "rank": 512
+  },
+  "conv1.weight": {
+    "size": [
+      24576,
+      96
+    ],
+    "rank": 96
+  },
+  "transformer.resblocks.0.attn.in_proj_weight": {
     "size": [
       2304,
       768
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_0.self_attention.out_proj.weight": {
-    "size": [
-      768,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_0.mlp.0.weight": {
-    "size": [
-      3072,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_0.mlp.3.weight": {
-    "size": [
-      768,
-      3072
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_1.self_attention.in_proj_weight": {
-    "size": [
-      2304,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_1.self_attention.out_proj.weight": {
-    "size": [
-      768,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_1.mlp.0.weight": {
-    "size": [
-      3072,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_1.mlp.3.weight": {
-    "size": [
-      768,
-      3072
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_2.self_attention.in_proj_weight": {
-    "size": [
-      2304,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_2.self_attention.out_proj.weight": {
-    "size": [
-      768,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_2.mlp.0.weight": {
-    "size": [
-      3072,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_2.mlp.3.weight": {
-    "size": [
-      768,
-      3072
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_3.self_attention.in_proj_weight": {
-    "size": [
-      2304,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_3.self_attention.out_proj.weight": {
-    "size": [
-      768,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_3.mlp.0.weight": {
-    "size": [
-      3072,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_3.mlp.3.weight": {
-    "size": [
-      768,
-      3072
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_4.self_attention.in_proj_weight": {
-    "size": [
-      2304,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_4.self_attention.out_proj.weight": {
-    "size": [
-      768,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_4.mlp.0.weight": {
-    "size": [
-      3072,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_4.mlp.3.weight": {
-    "size": [
-      768,
-      3072
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_5.self_attention.in_proj_weight": {
-    "size": [
-      2304,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_5.self_attention.out_proj.weight": {
+  "transformer.resblocks.0.attn.out_proj.weight": {
     "size": [
       768,
       768
     ],
     "rank": 767
   },
-  "encoder.layers.encoder_layer_5.mlp.0.weight": {
+  "transformer.resblocks.0.mlp.c_fc.weight": {
     "size": [
       3072,
       768
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_5.mlp.3.weight": {
+  "transformer.resblocks.0.mlp.c_proj.weight": {
     "size": [
       768,
       3072
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_6.self_attention.in_proj_weight": {
+  "transformer.resblocks.1.attn.in_proj_weight": {
     "size": [
       2304,
       768
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_6.self_attention.out_proj.weight": {
-    "size": [
-      768,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_6.mlp.0.weight": {
-    "size": [
-      3072,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_6.mlp.3.weight": {
-    "size": [
-      768,
-      3072
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_7.self_attention.in_proj_weight": {
-    "size": [
-      2304,
-      768
-    ],
-    "rank": 768
-  },
-  "encoder.layers.encoder_layer_7.self_attention.out_proj.weight": {
+  "transformer.resblocks.1.attn.out_proj.weight": {
     "size": [
       768,
       768
     ],
     "rank": 767
   },
-  "encoder.layers.encoder_layer_7.mlp.0.weight": {
+  "transformer.resblocks.1.mlp.c_fc.weight": {
     "size": [
       3072,
       768
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_7.mlp.3.weight": {
+  "transformer.resblocks.1.mlp.c_proj.weight": {
     "size": [
       768,
       3072
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_8.self_attention.in_proj_weight": {
+  "transformer.resblocks.2.attn.in_proj_weight": {
     "size": [
       2304,
       768
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_8.self_attention.out_proj.weight": {
+  "transformer.resblocks.2.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.2.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.2.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.3.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.3.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.3.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.3.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.4.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.4.attn.out_proj.weight": {
     "size": [
       768,
       768
     ],
     "rank": 767
   },
-  "encoder.layers.encoder_layer_8.mlp.0.weight": {
+  "transformer.resblocks.4.mlp.c_fc.weight": {
     "size": [
       3072,
       768
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_8.mlp.3.weight": {
+  "transformer.resblocks.4.mlp.c_proj.weight": {
     "size": [
       768,
       3072
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_9.self_attention.in_proj_weight": {
+  "transformer.resblocks.5.attn.in_proj_weight": {
     "size": [
       2304,
       768
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_9.self_attention.out_proj.weight": {
+  "transformer.resblocks.5.attn.out_proj.weight": {
     "size": [
       768,
       768
     ],
-    "rank": 768
+    "rank": 767
   },
-  "encoder.layers.encoder_layer_9.mlp.0.weight": {
+  "transformer.resblocks.5.mlp.c_fc.weight": {
     "size": [
       3072,
       768
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_9.mlp.3.weight": {
+  "transformer.resblocks.5.mlp.c_proj.weight": {
     "size": [
       768,
       3072
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_10.self_attention.in_proj_weight": {
+  "transformer.resblocks.6.attn.in_proj_weight": {
     "size": [
       2304,
       768
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_10.self_attention.out_proj.weight": {
+  "transformer.resblocks.6.attn.out_proj.weight": {
     "size": [
       768,
       768
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_10.mlp.0.weight": {
+  "transformer.resblocks.6.mlp.c_fc.weight": {
     "size": [
       3072,
       768
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_10.mlp.3.weight": {
+  "transformer.resblocks.6.mlp.c_proj.weight": {
     "size": [
       768,
       3072
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_11.self_attention.in_proj_weight": {
+  "transformer.resblocks.7.attn.in_proj_weight": {
     "size": [
       2304,
       768
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_11.self_attention.out_proj.weight": {
+  "transformer.resblocks.7.attn.out_proj.weight": {
     "size": [
       768,
       768
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_11.mlp.0.weight": {
+  "transformer.resblocks.7.mlp.c_fc.weight": {
     "size": [
       3072,
       768
     ],
     "rank": 768
   },
-  "encoder.layers.encoder_layer_11.mlp.3.weight": {
+  "transformer.resblocks.7.mlp.c_proj.weight": {
     "size": [
       768,
       3072
     ],
     "rank": 768
   },
-  "heads.head.weight": {
+  "transformer.resblocks.8.attn.in_proj_weight": {
     "size": [
-      1000,
+      2304,
       768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.8.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 767
+  },
+  "transformer.resblocks.8.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.8.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.9.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.9.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.9.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.9.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.10.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.10.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.10.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.10.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.11.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.11.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.11.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 768
+  },
+  "transformer.resblocks.11.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
     ],
     "rank": 768
   }

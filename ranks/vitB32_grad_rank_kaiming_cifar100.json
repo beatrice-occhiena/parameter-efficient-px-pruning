@@ -1,0 +1,366 @@
+{
+  "0.positional_embedding": {
+    "size": [
+      50,
+      768
+    ],
+    "rank": 50
+  },
+  "0.proj": {
+    "size": [
+      768,
+      512
+    ],
+    "rank": 99
+  },
+  "0.conv1.weight": {
+    "size": [
+      24576,
+      96
+    ],
+    "rank": 11
+  },
+  "0.transformer.resblocks.0.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 83
+  },
+  "0.transformer.resblocks.0.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 377
+  },
+  "0.transformer.resblocks.0.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 226
+  },
+  "0.transformer.resblocks.0.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 372
+  },
+  "0.transformer.resblocks.1.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 388
+  },
+  "0.transformer.resblocks.1.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 553
+  },
+  "0.transformer.resblocks.1.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 454
+  },
+  "0.transformer.resblocks.1.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 393
+  },
+  "0.transformer.resblocks.2.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 403
+  },
+  "0.transformer.resblocks.2.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 517
+  },
+  "0.transformer.resblocks.2.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 431
+  },
+  "0.transformer.resblocks.2.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 373
+  },
+  "0.transformer.resblocks.3.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 386
+  },
+  "0.transformer.resblocks.3.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 472
+  },
+  "0.transformer.resblocks.3.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 422
+  },
+  "0.transformer.resblocks.3.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 349
+  },
+  "0.transformer.resblocks.4.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 367
+  },
+  "0.transformer.resblocks.4.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 436
+  },
+  "0.transformer.resblocks.4.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 404
+  },
+  "0.transformer.resblocks.4.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 331
+  },
+  "0.transformer.resblocks.5.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 355
+  },
+  "0.transformer.resblocks.5.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 399
+  },
+  "0.transformer.resblocks.5.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 380
+  },
+  "0.transformer.resblocks.5.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 302
+  },
+  "0.transformer.resblocks.6.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 330
+  },
+  "0.transformer.resblocks.6.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 380
+  },
+  "0.transformer.resblocks.6.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 368
+  },
+  "0.transformer.resblocks.6.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 286
+  },
+  "0.transformer.resblocks.7.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 310
+  },
+  "0.transformer.resblocks.7.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 348
+  },
+  "0.transformer.resblocks.7.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 332
+  },
+  "0.transformer.resblocks.7.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 262
+  },
+  "0.transformer.resblocks.8.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 299
+  },
+  "0.transformer.resblocks.8.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 313
+  },
+  "0.transformer.resblocks.8.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 313
+  },
+  "0.transformer.resblocks.8.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 231
+  },
+  "0.transformer.resblocks.9.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 293
+  },
+  "0.transformer.resblocks.9.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 287
+  },
+  "0.transformer.resblocks.9.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 300
+  },
+  "0.transformer.resblocks.9.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 212
+  },
+  "0.transformer.resblocks.10.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 271
+  },
+  "0.transformer.resblocks.10.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 248
+  },
+  "0.transformer.resblocks.10.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 265
+  },
+  "0.transformer.resblocks.10.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 171
+  },
+  "0.transformer.resblocks.11.attn.in_proj_weight": {
+    "size": [
+      2304,
+      768
+    ],
+    "rank": 255
+  },
+  "0.transformer.resblocks.11.attn.out_proj.weight": {
+    "size": [
+      768,
+      768
+    ],
+    "rank": 188
+  },
+  "0.transformer.resblocks.11.mlp.c_fc.weight": {
+    "size": [
+      3072,
+      768
+    ],
+    "rank": 207
+  },
+  "0.transformer.resblocks.11.mlp.c_proj.weight": {
+    "size": [
+      768,
+      3072
+    ],
+    "rank": 108
+  },
+  "1.weight": {
+    "size": [
+      100,
+      512
+    ],
+    "rank": 99
+  }
+}
