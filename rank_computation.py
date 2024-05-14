@@ -31,11 +31,14 @@ def kaiming_init(model):
       if "bias" in name:
         nn.init.constant_(param, 0)
     elif "weight" in name:
-      nn.init.kaiming_normal_(param)
+        if "attn" in name: # Attention weights
+          nn.init.xavier_uniform_(param)
+        else:
+          nn.init.kaiming_normal_(param)
     elif "bias" in name:
       nn.init.constant_(param, 0)
     elif "class" in name: # Class Embedding
-      nn.init.constant_(param, 1)
+      nn.init.normal_(param, mean=0, std=0.01)  # small random values
     else:
       nn.init.kaiming_normal_(param)
 
@@ -46,9 +49,7 @@ def vitB32_init_kaiming():
   # return (model, None, None)
   clip_model, preprocess_train, preprocess_val = open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai')
   vision_model = clip_model.visual
-  print("pre_init:", vision_model.proj[2,3], vision_model.proj[4,5])
   kaiming_init(vision_model)
-  print("post_init:", vision_model.proj[2,3],  vision_model.proj[4,5])
   return (vision_model, preprocess_train, preprocess_val)
 
 def vitB32_pretrained_torch():
