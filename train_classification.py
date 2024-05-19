@@ -16,6 +16,8 @@ from lib.models.lottery_resnet import resnet20
 from lib.models.lottery_vgg import vgg16_bn
 from lib.models.tinyimagenet_resnet import resnet18 as tinyimagenet_resnet18
 from lib.models.imagenet_resnet import resnet50
+from lib.models.vitB32_openai import vitB32
+
 
 import lib.metrics as metrics
 import lib.layers as layers
@@ -42,15 +44,20 @@ class Experiment:
         assert CONFIG.pruner in ['Dense', 'Rand', 'SNIP', 'GraSP', 'SynFlow', 'SynFlowL2',
                                  'NTKSAP', 'Mag', 'PX', 'IMP'], f'"{CONFIG.pruner}" pruning strategy not available!'
         assert CONFIG.arch in ['resnet20', 'vgg16_bn', 'tinyimagenet_resnet18', 
-                               'resnet50'], f'"{CONFIG.arch}" architecture not available!'
+                               'resnet50', 'vitB32'], f'"{CONFIG.arch}" architecture not available!'
 
 
         # Load data
-        self.data = eval(CONFIG.dataset).load_data()
+        self.data = eval(CONFIG.dataset).load_data() # TODO: pretrained data transformation???
 
 
         # Initialize model
-        self.model = eval(CONFIG.arch)(num_classes=CONFIG.num_classes)
+        if "vit" in CONFIG.arch:
+            self.model = eval(CONFIG.arch)(num_classes=CONFIG.num_classes, device=CONFIG.device, dtype=CONFIG.dtype)
+        else:
+            self.model = eval(CONFIG.arch)(num_classes=CONFIG.num_classes)
+
+
         self.model = self.model.to(CONFIG.device)
 
 
