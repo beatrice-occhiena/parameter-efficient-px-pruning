@@ -9,6 +9,7 @@ class dotdict(dict):
 
 CONFIG = dotdict({})
 
+""" TODO!!! Undo
 if torch.cuda.is_available():
     CONFIG.device = 'cuda'
 elif torch.backends.mps.is_available() and \
@@ -16,5 +17,8 @@ elif torch.backends.mps.is_available() and \
     CONFIG.device = 'mps'
 else:
     CONFIG.device = 'cpu'
+"""
+CONFIG.device = 'cpu' #TODO!!! Undo
+
 
 CONFIG.dtype = torch.float32

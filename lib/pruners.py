@@ -135,8 +135,10 @@ class SNIP(Pruner):
         
                 loss(output, y).backward()
 
+        print("start!")
         # calculate score |g * theta|
         for m, p in self.masked_parameters:
+            print("I'm in!")
             if m.grad is None:
                 self.scores[id(p)] = torch.zeros_like(p)
                 m.requires_grad = False

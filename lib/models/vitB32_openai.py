@@ -1,4 +1,4 @@
-from lib.layers_vit import mask_pretrained_vit
+from lib.layers_vit import mask_pretrained_vit, Linear
 import open_clip
 import torch.nn as nn
 
@@ -28,13 +28,15 @@ def vitB32(num_classes, device, dtype):
   clip_model, preprocess_train, preprocess_val = open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai')
   vision_model = clip_model.visual
 
-  # New classification head: 512 out_features of vitB32_clip -> N classes of DATASET
+  # Substitute all layers with maskable ones
+  mask_pretrained_vit(vision_model, device, dtype)
+
+  # New maskable classification head: 512 out_features of vitB32_clip -> N classes of DATASET
   class_embedding_size = vision_model.output_dim
-  head = nn.Linear(class_embedding_size, num_classes)
+  head = Linear(class_embedding_size, num_classes)
   kaiming_init(head)
   model = nn.Sequential(vision_model, head)
 
-  # Substitute all layers with maskable ones
-  mask_pretrained_vit(model, device, dtype)
+  print("ViT-B/32 correctly imported and assembled with classification head and maskable layers!")
 
   return model

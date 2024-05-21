@@ -436,7 +436,7 @@ class Embedding(nn.modules.sparse.Embedding):
         return s.format(**self.__dict__)
 
 
-def mask_pretrained_vit(model, device, dtype, skip_ln=False):
+def mask_pretrained_vit(model, device, dtype, skip_ln=False, skip_emb=True):
     """
         Creates a new model that is identical to the original pretrained model,
         but with new instances of certain types of layers for masking purposes.
@@ -504,7 +504,7 @@ def mask_pretrained_vit(model, device, dtype, skip_ln=False):
             exec(f'model.{name}.load_state_dict(state_dict, False)')
 
         elif isinstance(layer, nn.modules.sparse.Embedding): # torch.nn.modules.sparse.Embedding
-            continue # we're not masking the embedding layers
+            if skip_emb: continue
             state_dict = deepcopy(layer.state_dict())
             name = re.sub(r'(\.)(\d+)(\.)', r'[\2].', name)
             exec(f'model.{name} = Embedding( \

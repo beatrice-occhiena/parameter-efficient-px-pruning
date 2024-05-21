@@ -104,7 +104,7 @@ def load_cifar10(preprocess_train):
     resize_mode: str = 'shortest'
     fill_color: int = 0
   """
-  train_data = CIFAR10(root='./data', train=True, download=True, transform=preprocess_train)
+  train_data = CIFAR10(root='./data/CIFAR10', train=True, download=True, transform=preprocess_train)
   train_loader = DataLoader(train_data, batch_size=64, shuffle=True)
   num_classes = 10
 
@@ -122,7 +122,7 @@ def load_cifar100(preprocess_train):
     resize_mode: str = 'shortest'
     fill_color: int = 0
   """
-  train_data = CIFAR100(root='./data', train=True, download=True, transform=preprocess_train)
+  train_data = CIFAR100(root='./data/CIFAR100', train=True, download=True, transform=preprocess_train)
   train_loader = DataLoader(train_data, batch_size=64, shuffle=True)
   num_classes = 100
 
@@ -140,7 +140,7 @@ def load_tinyImageNet(preprocess_train):
     resize_mode: str = 'shortest'
     fill_color: int = 0
   """
-  train_data = TINYIMAGENET(root='./data', train=True, download=True, transform=preprocess_train)
+  train_data = TINYIMAGENET(root='./data/TinyImageNet', train=True, download=True, transform=preprocess_train)
   train_loader = DataLoader(train_data, batch_size=64, shuffle=True)
   num_classes = 200
 

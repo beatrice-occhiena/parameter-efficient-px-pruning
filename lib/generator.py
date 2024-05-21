@@ -1,4 +1,5 @@
 from lib import layers
+from lib import layers_vit
 
 def masks(module):
     r"""Returns an iterator over modules masks, yielding the mask.
@@ -12,14 +13,23 @@ def trainable(module):
     """
     return not isinstance(module, (layers.Identity1d, layers.Identity2d))
 
-def prunable(module, batchnorm, residual):
+def prunable(module, batchnorm, residual, layernorm=True, embedding=False):
     r"""Returns boolean whether a module is prunable.
     """
+    # Original maskable layer extension
     isprunable = isinstance(module, (layers.Linear, layers.Conv2d))
     if batchnorm:
         isprunable |= isinstance(module, (layers.BatchNorm1d, layers.BatchNorm2d))
     if residual:
         isprunable |= isinstance(module, (layers.Identity1d, layers.Identity2d))
+
+    # Maskable layer extension for ViT models
+    isprunable |= isinstance(module, (layers_vit.Linear, layers_vit.Conv2d, layers_vit.MultiheadAttention))
+    if layernorm:
+        isprunable |= isinstance(module, (layers_vit.LayerNorm))
+    if embedding:
+        isprunable |= isinstance(module, (layers_vit.Embedding))
+        
     return isprunable
 
 def parameters(model):
