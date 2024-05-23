@@ -23,13 +23,17 @@ def get_transform(train, mean, std):
             T.Normalize(mean, std)])
     return transform
 
-def load_data():
+def load_data(preprocess_train=None, preprocess_val=None):
     CONFIG.num_classes = 1000
     CONFIG.data_input_size = (3, 224, 224)
 
-    mean, std = (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)
-    train_transform = get_transform(train=True, mean=mean, std=std)
-    test_transform = get_transform(train=False, mean=mean, std=std)
+    if "vit" in CONFIG.arch:
+        train_transform = preprocess_train
+        test_transform = preprocess_val
+    else:
+        mean, std = (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)
+        train_transform = get_transform(train=True, mean=mean, std=std)
+        test_transform = get_transform(train=False, mean=mean, std=std)
 
     train_folder = os.path.join(CONFIG.dataset_args['root'], 'train')
     train_dataset = datasets.ImageFolder(train_folder, transform=train_transform)

@@ -198,7 +198,7 @@ def get_dataset(opts):
                               image_set='val', download=False, transform=val_transform)
     return train_dst, val_dst
 
-def load_data():
+def load_data(preprocess_train=None, preprocess_val=None):
     CONFIG.num_classes = 21
     CONFIG.data_input_size = (3, 513, 513)
 

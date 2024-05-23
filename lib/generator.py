@@ -45,6 +45,8 @@ def masked_parameters(model, bias=False, batchnorm=False, residual=False):
     mask and parameter tensors.
     """
     for module in filter(lambda p: prunable(p, batchnorm, residual), model.modules()):
-        for mask, param in zip(masks(module), module.parameters(recurse=False)):
-            if param is not module.bias or bias is True:
+        for mask, name_param in zip(masks(module), module.named_parameters(recurse=False)): #TODO:CHECK removed recurse=False
+            name, param = name_param
+            if "bias" not in name or bias is True:
+                #print(name, param.shape, mask.shape)
                 yield mask, param

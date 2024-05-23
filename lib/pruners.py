@@ -32,8 +32,10 @@ class Pruner:
         # Threshold scores
         global_scores = torch.cat([torch.flatten(v) for v in self.scores.values()])
         k = int((1.0 - sparsity) * global_scores.numel())
+        print("K: ", k)
         if not k < 1:
             threshold, _ = torch.kthvalue(global_scores, k)
+            print("threshold value: ", threshold)
             for mask, param in self.masked_parameters:
                 score = self.scores[id(param)] 
                 zero = torch.tensor([0.]).to(mask.device)
@@ -135,10 +137,8 @@ class SNIP(Pruner):
         
                 loss(output, y).backward()
 
-        print("start!")
         # calculate score |g * theta|
         for m, p in self.masked_parameters:
-            print("I'm in!")
             if m.grad is None:
                 self.scores[id(p)] = torch.zeros_like(p)
                 m.requires_grad = False

@@ -3,6 +3,7 @@ import torch.nn as nn
 import numpy as np
 import pandas as pd
 import lib.layers as layers
+import lib.layers_vit as layers_vit
 
 def summary(model, scores, flops, prunable):
     r"""Summary of compression results for a model.
@@ -40,13 +41,13 @@ def flop(model, input_shape, device):
     def count_flops(name):
         def hook(module, input, output):
             flops = {}
-            if isinstance(module, layers.Linear) or isinstance(module, nn.Linear):
+            if isinstance(module, (layers.Linear, layers_vit.Linear, nn.Linear)):
                 in_features = module.in_features
                 out_features = module.out_features
                 flops['weight'] = in_features * out_features
                 if module.bias is not None:
                     flops['bias'] = out_features
-            if isinstance(module, layers.Conv2d) or isinstance(module, nn.Conv2d):
+            if isinstance(module, (layers.Conv2d, layers_vit.Conv2d, nn.Conv2d)):
                 in_channels = module.in_channels
                 out_channels = module.out_channels
                 kernel_size = int(np.prod(module.kernel_size))
@@ -54,11 +55,17 @@ def flop(model, input_shape, device):
                 flops['weight'] = in_channels * out_channels * kernel_size * output_size
                 if module.bias is not None:
                     flops['bias'] = out_channels * output_size
-            if isinstance(module, layers.BatchNorm1d) or isinstance(module, nn.BatchNorm1d):
+            if isinstance(module, (layers_vit.LayerNorm, nn.LayerNorm)):
+                #TODO: Complete flop dictionary with
+                # - layer norm
+                # - embedding
+                # - multi-head attention
+
+            if isinstance(module, (layers.BatchNorm1d, nn.BatchNorm1d)):
                 if module.affine:
                     flops['weight'] = module.num_features
                     flops['bias'] = module.num_features
-            if isinstance(module, layers.BatchNorm2d) or isinstance(module, nn.BatchNorm2d):
+            if isinstance(module, (layers.BatchNorm2d, nn.BatchNorm2d)):
                 output_size = output.size(2) * output.size(3)
                 if module.affine:
                     flops['weight'] = module.num_features * output_size

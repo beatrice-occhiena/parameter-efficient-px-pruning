@@ -22,7 +22,7 @@ def kaiming_init(model):
     else:
       nn.init.kaiming_normal_(param)
 
-def vitB32(num_classes, device, dtype):
+def vitB32(device, dtype):
 
   # VIT-B/32 PRETRAINED from mlfoundations/open_clip
   clip_model, preprocess_train, preprocess_val = open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai')
@@ -30,13 +30,19 @@ def vitB32(num_classes, device, dtype):
 
   # Substitute all layers with maskable ones
   mask_pretrained_vit(vision_model, device, dtype)
+  print("ViT-B/32 correctly imported and assembled with maskable layers!")
 
-  # New maskable classification head: 512 out_features of vitB32_clip -> N classes of DATASET
+  return vision_model, preprocess_train, preprocess_val
+
+def add_classification_head(vision_model, num_classes):
+
+  # New maskable classification head: output_dim of vit -> N classes of DATASET
   class_embedding_size = vision_model.output_dim
   head = Linear(class_embedding_size, num_classes)
   kaiming_init(head)
   model = nn.Sequential(vision_model, head)
 
-  print("ViT-B/32 correctly imported and assembled with classification head and maskable layers!")
+  print("Maskable classification head correctly added!")
 
   return model
+

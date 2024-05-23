@@ -13,7 +13,7 @@ def get_transform(size, padding, mean, std, preprocess):
     transform.append(T.Normalize(mean, std))
     return T.Compose(transform)
 
-def load_data():
+def load_data(preprocess_train=None, preprocess_val=None):
     size = 32
     if 'pretrain' in CONFIG.experiment_args:
         size = 224
@@ -21,9 +21,15 @@ def load_data():
     CONFIG.num_classes = 10
     CONFIG.data_input_size = (3, size, size)
 
-    mean, std = (0.491, 0.482, 0.447), (0.247, 0.243, 0.262)
-    train_transform = get_transform(size=size, padding=4, mean=mean, std=std, preprocess=True)
-    test_transform = get_transform(size=size, padding=4, mean=mean, std=std, preprocess=False)
+    if "vit" in CONFIG.arch:
+        print("Original preprocess tranform from OpenAI selceted.")
+        train_transform = preprocess_train
+        test_transform = preprocess_val
+    else:
+        print("Preprocess tranform from CIFAR10 selceted.")
+        mean, std = (0.491, 0.482, 0.447), (0.247, 0.243, 0.262)
+        train_transform = get_transform(size=size, padding=4, mean=mean, std=std, preprocess=True)
+        test_transform = get_transform(size=size, padding=4, mean=mean, std=std, preprocess=False)
     train_dataset = CIFAR10(CONFIG.dataset_args['root'], train=True, download=True, transform=train_transform)
     test_dataset = CIFAR10(CONFIG.dataset_args['root'], train=False, download=True, transform=test_transform)
 

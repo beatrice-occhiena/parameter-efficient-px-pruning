@@ -16,7 +16,7 @@ from lib.models.lottery_resnet import resnet20
 from lib.models.lottery_vgg import vgg16_bn
 from lib.models.tinyimagenet_resnet import resnet18 as tinyimagenet_resnet18
 from lib.models.imagenet_resnet import resnet50
-from lib.models.vitB32_openai import vitB32
+from lib.models.vitB32_openai import vitB32, add_classification_head
 
 
 import lib.metrics as metrics
@@ -46,16 +46,18 @@ class Experiment:
         assert CONFIG.arch in ['resnet20', 'vgg16_bn', 'tinyimagenet_resnet18', 
                                'resnet50', 'vitB32'], f'"{CONFIG.arch}" architecture not available!'
 
-
-        # Load data
-        self.data = eval(CONFIG.dataset).load_data() # TODO: pretrained data transformation???
-
-
         # Initialize model
         if "vit" in CONFIG.arch:
-            self.model = eval(CONFIG.arch)(num_classes=CONFIG.num_classes, device=CONFIG.device, dtype=CONFIG.dtype)
+            self.model, preprocess_train, preprocess_val = eval(CONFIG.arch)(device=CONFIG.device, dtype=CONFIG.dtype)
         else:
             self.model = eval(CONFIG.arch)(num_classes=CONFIG.num_classes)
+
+        # Load data
+        if "vit" in CONFIG.arch:
+            self.data = eval(CONFIG.dataset).load_data(preprocess_train, preprocess_val) #TODO:CHECK
+            self.model = add_classification_head(vision_model=self.model, num_classes=CONFIG.num_classes)
+        else:
+            self.data = eval(CONFIG.dataset).load_data()
 
 
         self.model = self.model.to(CONFIG.device)
@@ -78,14 +80,16 @@ class Experiment:
             if CONFIG.pruner in ['SynFlow', 'SynFlowL2', 'PX']:
                 self.model.eval()
             
+            print("Starting pruning rounds!")
             for round in range(ROUNDS):
                 sparse = sparsity**((round + 1) / ROUNDS)
+                print("sparse: ", sparse)
 
                 self.pruner.score(self.model, self.loss_fn, self.data['train'], CONFIG.device)
 
                 self.pruner.mask(sparse, 'global')
                 remaining_params, total_params = self.pruner.stats()
-                logging.info(f'{int(remaining_params)} / {int(total_params)} | {remaining_params / total_params}')
+                logging.info(f'params: {int(remaining_params)} / {int(total_params)} | {remaining_params / total_params}')
 
         elif CONFIG.pruner in ['IMP']: # Iterative pruning
             
@@ -103,7 +107,7 @@ class Experiment:
                 self.pruner.score(self.model, self.loss_fn, self.data['train'], CONFIG.device)
                 self.pruner.mask(sparse, 'global')
                 remaining_params, total_params = self.pruner.stats()
-                logging.info(f'{int(remaining_params)} / {int(total_params)} | {remaining_params / total_params}')
+                logging.info(f'params: {int(remaining_params)} / {int(total_params)} | {remaining_params / total_params}')
 
                 db = {}
                 for k in initial_state:
