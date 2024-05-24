@@ -83,7 +83,7 @@ class Experiment:
             print("Starting pruning rounds!")
             for round in range(ROUNDS):
                 sparse = sparsity**((round + 1) / ROUNDS)
-                print("sparse: ", sparse)
+                #print("sparse: ", sparse)
 
                 self.pruner.score(self.model, self.loss_fn, self.data['train'], CONFIG.device)
 

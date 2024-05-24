@@ -63,7 +63,7 @@ def flop(model, input_shape, device):
                 flops['positional_embedding'] = num_tokens * hidden_dim # added to intput
                 out_dim = module.output_dim
                 flops['proj'] = hidden_dim * out_dim # final linear projection
-            if isinstance(module, (layers_vit.MultiheadAttention, nn.MultiheadAttention())):
+            if isinstance(module, (layers_vit.MultiheadAttention, nn.MultiheadAttention)):
                 embed_dim = module.embed_dim
                 flops['in_proj_weight'] = 3 * (embed_dim * embed_dim)  # Query, Key, Value linear projections
                 flops['in_proj_bias'] = 3 * embed_dim

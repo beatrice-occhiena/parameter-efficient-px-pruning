@@ -32,10 +32,10 @@ class Pruner:
         # Threshold scores
         global_scores = torch.cat([torch.flatten(v) for v in self.scores.values()])
         k = int((1.0 - sparsity) * global_scores.numel())
-        print("K: ", k)
+        #print("K: ", k)
         if not k < 1:
             threshold, _ = torch.kthvalue(global_scores, k)
-            print("threshold value: ", threshold)
+            #print("threshold value: ", threshold)
             for mask, param in self.masked_parameters:
                 score = self.scores[id(param)] 
                 zero = torch.tensor([0.]).to(mask.device)
