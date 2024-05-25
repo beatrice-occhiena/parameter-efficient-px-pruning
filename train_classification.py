@@ -81,7 +81,7 @@ class Experiment:
                 self.model.eval()
             
             print("Starting pruning rounds!")
-            for round in range(ROUNDS):
+            for round in tqdm(range(ROUNDS)):
                 sparse = sparsity**((round + 1) / ROUNDS)
                 #print("sparse: ", sparse)
 
@@ -100,7 +100,7 @@ class Experiment:
             
             initial_state = copy.deepcopy(self.model.state_dict())
 
-            for round in range(ROUNDS):
+            for round in tqdm(range(ROUNDS)):
                 sparse = sparsity**((round + 1) / ROUNDS)
 
                 self.model = self.fit(save_checkpoint=False)
@@ -144,7 +144,8 @@ class Experiment:
             milestones = [80, 120]
             if 'pretrain' in CONFIG.experiment_args:
                 milestones = [91, 136]
-            self.optimizer = torch.optim.SGD(parameters(self.model), lr=0.1, momentum=0.9, weight_decay=1e-4)
+            #self.optimizer = torch.optim.SGD(parameters(self.model), lr=0.1, momentum=0.9, weight_decay=1e-4)
+            self.optimizer = torch.optim.SGD(parameters(self.model), lr=1e-2, momentum=0.9, weight_decay=1e-5)
             self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=milestones, gamma=0.1)
             self.loss_fn = nn.CrossEntropyLoss()
 
@@ -192,6 +193,8 @@ class Experiment:
         for epoch in range(current_epoch, CONFIG.epochs):
             self.model.train()
 
+            print(f'Training phase @ epoch {current_epoch}')
+
             # Train epoch
             for batch_idx, data_tuple in tqdm(enumerate(self.data['train'])):
 
@@ -203,6 +206,8 @@ class Experiment:
                 with torch.autocast(device_type=CONFIG.device, dtype=torch.float16, enabled=True):
                     logits = self.model(x).squeeze()
                     loss = self.loss_fn(logits, y) / CONFIG.grad_accum_steps
+                    #print("Loss: ", loss)
+                    #print("Logits: ", logits[0][0])
                 
                 self.scaler.scale(loss).backward()
 
@@ -220,6 +225,7 @@ class Experiment:
             logging.info(f'[VAL @ Epoch={epoch}]')
 
             if CONFIG.dataset in ['CIFAR10', 'CIFAR100', 'TinyImageNet', 'ImageNet']:
+                print(f'Validation started!')
                 metrics = self.evaluate(self.data['test'])
 
                 # Model selection & State management
@@ -269,6 +275,11 @@ class Experiment:
                 'Acc': acc_tot.item(),
                 'Loss': loss[0] / loss[1]
             }
+
+            print("Cumulative loss: ", loss[0])
+            print("Cumulative batch dim: ", loss[1])
+            print("Loss: ", metrics['Loss'])
+            print("Accuracy: ", metrics['Acc'])
 
         logging.info(metrics)
         return metrics

@@ -57,7 +57,7 @@ def flop(model, input_shape, device):
                 if module.bias is not None:
                     flops['bias'] = out_channels * output_size
             if isinstance(module, (VisionTransformer)):
-                hidden_dim = module.width
+                hidden_dim = module.transformer.width
                 num_tokens = module.grid_size[0] * module.grid_size[1] + 1
                 flops['class_embedding'] = hidden_dim # TODO:CHECK concat or 0?
                 flops['positional_embedding'] = num_tokens * hidden_dim # added to intput
@@ -67,14 +67,24 @@ def flop(model, input_shape, device):
                 embed_dim = module.embed_dim
                 flops['in_proj_weight'] = 3 * (embed_dim * embed_dim)  # Query, Key, Value linear projections
                 flops['in_proj_bias'] = 3 * embed_dim
+
                 # TODO:CHECK to be added or not?
                 #num_heads = module.num_heads
                 #head_dim = module.head_dim
                 #attn_scores_flops = num_heads * (head_dim * head_dim)  # Attention score calculations
                 #attn_weighted_sum_flops = num_heads * (head_dim * head_dim)  # Weighted sum of values
                 #flops['in_proj_weight'] += attn_scores_flops + attn_weighted_sum_flops
+                
+                # TODO:CHECK
+                # Since the Linear submodule of out_proj is not accesed through the forward method
+                # We need to manually replicate its hook function here
+                out_proj_flops = {}
+                out_proj_flops['weight'] = embed_dim * embed_dim
+                out_proj_flops['bias'] = embed_dim
+                total[name+".out_proj"] = out_proj_flops
+
             if isinstance(module, (layers_vit.LayerNorm, nn.LayerNorm)):
-                normalized_shape = torch.prod(module.normalized_shape).item() # Number of elements on which normaliz is applied
+                normalized_shape = torch.prod(torch.tensor(module.normalized_shape)).item() # Number of elements on which normaliz is applied
                 if module.elementwise_affine:
                     flops['weight'] = normalized_shape  # Scale
                     flops['bias'] = normalized_shape  # Shift
