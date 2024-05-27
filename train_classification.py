@@ -37,6 +37,16 @@ def kaiming_normal_init(model):
             nn.init.constant_(m.weight, 1)
             nn.init.constant_(m.bias, 0)
 
+def activate_parameters_gradients(model, are_active: bool):
+    for _, mod in model.named_modules():
+        for pname, par in model.named_parameters(recurse=False):
+            if isinstance(mod, (nn.Linear, nn.MultiheadAttention, nn.Conv2d)):
+                if "weight" in pname:
+                    par.requires_grad = are_active
+                    mod.A.requires_grad = not are_active
+                    mod.B.requires_grad = not are_active
+
+
 class Experiment:
 
     def __init__(self):
@@ -69,8 +79,14 @@ class Experiment:
         # Meters
         self._init_meters()
 
+        # Enhancement strategy
+        if CONFIG.enhancement_args['enhancement'] in ("LoRAinspired","IA3inspired"):
+            # Freeze the gradients for the decomposed parameters
+            # Activate the gradients for A & B
+            activate_parameters_gradients(self.model, are_active=False)
 
         # Pruning strategy
+        CONFIG.pruning_phase = True
         if CONFIG.pruner in ['Rand', 'Mag', 'SNIP', 'GraSP', 'SynFlow', 'SynFlowL2', 'NTKSAP', 'PX']: # Pruning-at-init         
             ROUNDS = CONFIG.experiment_args['rounds']
             sparsity = CONFIG.experiment_args['weight_remaining_ratio']
@@ -134,7 +150,14 @@ class Experiment:
                                     metrics.flop(self.model, CONFIG.data_input_size, CONFIG.device),
                                     lambda p: prunable(p, False, False))
                 with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-                    logging.info(prune_result)
+                    logging.info(prune_result) 
+        
+        # Pruning eneded
+        CONFIG.pruning_phase = False
+        if CONFIG.enhancement_args['enhancement'] in ("LoRAinspired","IA3inspired"):
+            # Un-freeze the gradients for the decomposed parameters
+            # De-activate the gradients for A & B
+            activate_parameters_gradients(self.model, are_active=True)
 
 
     def _init_optimizers(self):

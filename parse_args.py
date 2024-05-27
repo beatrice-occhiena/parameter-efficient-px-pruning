@@ -20,6 +20,7 @@ def parse_arguments():
     parser.add_argument('--experiment', type=str, default='Baseline')
     parser.add_argument('--experiment_name', type=str, default='Baseline')
     parser.add_argument('--experiment_args', type=str, default='{}')
+    parser.add_argument('--enhancement_args', type=str, default='{}')
     parser.add_argument('--task', type=str, default='classification')
     parser.add_argument('--dataset', type=str, default='CIFAR10')
     parser.add_argument('--dataset_args', type=str, default='{}')
