@@ -11,6 +11,8 @@ from torch.nn.init import xavier_uniform_, constant_, xavier_normal_
 from copy import deepcopy
 import re
 
+from globals import CONFIG
+
 
 def mm(a, b, masking=True):
     # Canonically, a is the weight tensor, b is the mask tensor
@@ -20,7 +22,14 @@ def mm(a, b, masking=True):
         return a
     else:
         return b
-    
+
+
+# TODO: Add class VisionTransformer to make proj maskable
+# - here
+# - mask_pretrained_vit
+# - generator.prunable 
+# - insert in LoRA, IA3 no grad list - activate_parameters_gradients
+
 
 class Linear(nn.Linear):
     def __init__(self, in_features, out_features, bias=True):
@@ -30,12 +39,24 @@ class Linear(nn.Linear):
         if self.bias is not None:
             self.register_buffer('bias_mask', torch.ones(self.bias.shape))
 
+        # LoRA inspired enhancement for parameter efficiency
+        if CONFIG.enhancement_args['enhancement'] is "LoRAinspired":
+            rank = CONFIG.enhancement_args['rank']
+            self.A = torch.ones([in_features, rank])*(1/math.sqrt(rank))
+            self.B = torch.ones([rank, out_features])*(1/math.sqrt(rank))
+
     def forward(self, input):
         W = mm(self.weight, self.weight_mask, masking=self.masking)
         if self.bias is not None:
             b = mm(self.bias, self.bias_mask, masking=self.masking)
         else:
             b = self.bias
+
+        # LoRA inspired enhancement for parameter efficiency
+        if CONFIG.enhancement_args['enhancement'] is "LoRAinspired" and CONFIG.pruning_phase:
+            BA = self.A @ self.B
+            W = W * BA
+            
         return F.linear(input, W, b)
     
     def __repr__(self):
@@ -57,6 +78,12 @@ class Conv2d(nn.Conv2d):
         if self.bias is not None:
             self.register_buffer('bias_mask', torch.ones(self.bias.shape))
 
+        # LoRA inspired enhancement for parameter efficiency
+        if CONFIG.enhancement_args['enhancement'] is "LoRAinspired":
+            rank = CONFIG.enhancement_args['rank']
+            self.A = torch.ones([in_channels * kernel_size[0], rank])*(1/math.sqrt(rank))
+            self.B = torch.ones([rank, kernel_size[1] * out_channels])*(1/math.sqrt(rank))
+
     def _conv_forward(self, input, weight, bias):
         if self.padding_mode != 'zeros':
             return F.conv2d(F.pad(input, self._padding_repeated_twice, mode=self.padding_mode),
@@ -67,6 +94,12 @@ class Conv2d(nn.Conv2d):
 
     def forward(self, input):
         W = mm(self.weight, self.weight_mask, masking=self.masking)
+        # LoRA inspired enhancement for parameter efficiency
+        if CONFIG.enhancement_args['enhancement'] is "LoRAinspired" and CONFIG.pruning_phase:
+            BA = self.A @ self.B
+            BA = BA.view(self.weight.shape)
+            W = W * BA
+        
         if self.bias is not None:
             b = mm(self.bias, self.bias_mask, masking=self.masking)
         else:
@@ -128,6 +161,14 @@ class MultiheadAttention(nn.MultiheadAttention):
             self.register_buffer('q_proj_weight_mask', None)
             self.register_buffer('k_proj_weight_mask', None)
             self.register_buffer('v_proj_weight_mask', None)
+
+            # LoRA inspired enhancement for parameter efficiency
+            if CONFIG.enhancement_args['enhancement'] is "LoRAinspired":
+                rank = CONFIG.enhancement_args['rank']
+                self.Ain = torch.ones([embed_dim, rank])*(1/math.sqrt(rank))
+                self.Bin = torch.ones([rank, 3 * embed_dim])*(1/math.sqrt(rank))
+                self.Aout = torch.ones([embed_dim, rank])*(1/math.sqrt(rank))
+                self.Bout = torch.ones([rank, embed_dim])*(1/math.sqrt(rank))
         
         if bias:
             self.in_proj_bias = Parameter(torch.empty(3 * embed_dim, **factory_kwargs))
@@ -305,17 +346,33 @@ class MultiheadAttention(nn.MultiheadAttention):
                 average_attn_weights=average_attn_weights,
                 is_causal=is_causal)
         else:
-            attn_output, attn_output_weights = F.multi_head_attention_forward(
-                query, key, value, self.embed_dim, self.num_heads,
-                mm(self.in_proj_weight, self.in_proj_weight_mask, masking=self.masking), mm(self.in_proj_bias, self.in_proj_bias_mask, masking=self.masking),
-                mm(self.bias_k, self.bias_k_mask, masking=self.masking), mm(self.bias_v, self.bias_v_mask, masking=self.masking), self.add_zero_attn,
-                self.dropout, mm(self.out_proj.weight, self.out_proj.weight_mask, masking=self.masking), mm(self.out_proj.bias, self.out_proj.bias_mask, masking=self.masking),
-                training=self.training,
-                key_padding_mask=key_padding_mask,
-                need_weights=need_weights,
-                attn_mask=attn_mask,
-                average_attn_weights=average_attn_weights,
-                is_causal=is_causal)
+            # LoRA inspired enhancement for parameter efficiency
+            if CONFIG.enhancement_args['enhancement'] is "LoRAinspired" and CONFIG.pruning_phase:
+                BAin = self.Ain @ self.Bin
+                BAout = self.Aout @ self.Bout
+                attn_output, attn_output_weights = F.multi_head_attention_forward(
+                    query, key, value, self.embed_dim, self.num_heads,
+                    mm(self.in_proj_weight, self.in_proj_weight_mask, masking=self.masking) * BAin, mm(self.in_proj_bias, self.in_proj_bias_mask, masking=self.masking),
+                    mm(self.bias_k, self.bias_k_mask, masking=self.masking), mm(self.bias_v, self.bias_v_mask, masking=self.masking), self.add_zero_attn,
+                    self.dropout, mm(self.out_proj.weight, self.out_proj.weight_mask, masking=self.masking) * BAout, mm(self.out_proj.bias, self.out_proj.bias_mask, masking=self.masking),
+                    training=self.training,
+                    key_padding_mask=key_padding_mask,
+                    need_weights=need_weights,
+                    attn_mask=attn_mask,
+                    average_attn_weights=average_attn_weights,
+                    is_causal=is_causal)
+            else:
+                attn_output, attn_output_weights = F.multi_head_attention_forward(
+                    query, key, value, self.embed_dim, self.num_heads,
+                    mm(self.in_proj_weight, self.in_proj_weight_mask, masking=self.masking), mm(self.in_proj_bias, self.in_proj_bias_mask, masking=self.masking),
+                    mm(self.bias_k, self.bias_k_mask, masking=self.masking), mm(self.bias_v, self.bias_v_mask, masking=self.masking), self.add_zero_attn,
+                    self.dropout, mm(self.out_proj.weight, self.out_proj.weight_mask, masking=self.masking), mm(self.out_proj.bias, self.out_proj.bias_mask, masking=self.masking),
+                    training=self.training,
+                    key_padding_mask=key_padding_mask,
+                    need_weights=need_weights,
+                    attn_mask=attn_mask,
+                    average_attn_weights=average_attn_weights,
+                    is_causal=is_causal)
         if self.batch_first and is_batched:
             return attn_output.transpose(1, 0), attn_output_weights
         else:
