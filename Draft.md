@@ -17,6 +17,10 @@ SGD(parameters(self.model), lr=1e-2, momentum=0.9, weight_decay=1e-5)
 {'Acc': 0.835099995136261, 'Loss': 0.006675085034966469}
 SGD(parameters(self.model), lr=1e-4, momentum=0.9, weight_decay=1e-5)
 
+### CIFAR10/0.107/SynFlow
+...
+SGD(parameters(self.model), lr=1e-3, momentum=0.9, weight_decay=1e-5)
+
 ### CIFAR10/0.018/SynFlow
 [VAL @ Epoch=95]
 {'Acc': 0.6280999779701233, 'Loss': 0.017116346609592437}

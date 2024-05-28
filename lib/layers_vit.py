@@ -40,7 +40,7 @@ class Linear(nn.Linear):
             self.register_buffer('bias_mask', torch.ones(self.bias.shape))
 
         # LoRA inspired enhancement for parameter efficiency
-        if CONFIG.enhancement_args['enhancement'] is "LoRAinspired":
+        if CONFIG.enhancement_args['enhancement'] == "LoRAinspired":
             rank = CONFIG.enhancement_args['rank']
             self.A = torch.ones([in_features, rank])*(1/math.sqrt(rank))
             self.B = torch.ones([rank, out_features])*(1/math.sqrt(rank))
@@ -53,7 +53,7 @@ class Linear(nn.Linear):
             b = self.bias
 
         # LoRA inspired enhancement for parameter efficiency
-        if CONFIG.enhancement_args['enhancement'] is "LoRAinspired" and CONFIG.pruning_phase:
+        if CONFIG.enhancement_args['enhancement'] == "LoRAinspired" and CONFIG.pruning_phase:
             BA = self.A @ self.B
             W = W * BA
             
@@ -79,7 +79,7 @@ class Conv2d(nn.Conv2d):
             self.register_buffer('bias_mask', torch.ones(self.bias.shape))
 
         # LoRA inspired enhancement for parameter efficiency
-        if CONFIG.enhancement_args['enhancement'] is "LoRAinspired":
+        if CONFIG.enhancement_args['enhancement'] == "LoRAinspired":
             rank = CONFIG.enhancement_args['rank']
             self.A = torch.ones([in_channels * kernel_size[0], rank])*(1/math.sqrt(rank))
             self.B = torch.ones([rank, kernel_size[1] * out_channels])*(1/math.sqrt(rank))
@@ -95,7 +95,7 @@ class Conv2d(nn.Conv2d):
     def forward(self, input):
         W = mm(self.weight, self.weight_mask, masking=self.masking)
         # LoRA inspired enhancement for parameter efficiency
-        if CONFIG.enhancement_args['enhancement'] is "LoRAinspired" and CONFIG.pruning_phase:
+        if CONFIG.enhancement_args['enhancement'] == "LoRAinspired" and CONFIG.pruning_phase:
             BA = self.A @ self.B
             BA = BA.view(self.weight.shape)
             W = W * BA
@@ -163,7 +163,7 @@ class MultiheadAttention(nn.MultiheadAttention):
             self.register_buffer('v_proj_weight_mask', None)
 
             # LoRA inspired enhancement for parameter efficiency
-            if CONFIG.enhancement_args['enhancement'] is "LoRAinspired":
+            if CONFIG.enhancement_args['enhancement'] == "LoRAinspired":
                 rank = CONFIG.enhancement_args['rank']
                 self.Ain = torch.ones([embed_dim, rank])*(1/math.sqrt(rank))
                 self.Bin = torch.ones([rank, 3 * embed_dim])*(1/math.sqrt(rank))
@@ -347,7 +347,7 @@ class MultiheadAttention(nn.MultiheadAttention):
                 is_causal=is_causal)
         else:
             # LoRA inspired enhancement for parameter efficiency
-            if CONFIG.enhancement_args['enhancement'] is "LoRAinspired" and CONFIG.pruning_phase:
+            if CONFIG.enhancement_args['enhancement'] == "LoRAinspired" and CONFIG.pruning_phase:
                 BAin = self.Ain @ self.Bin
                 BAout = self.Aout @ self.Bout
                 attn_output, attn_output_weights = F.multi_head_attention_forward(

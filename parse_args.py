@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 
 def _clear_args(parsed_args):
     parsed_args.experiment_args = eval(parsed_args.experiment_args)
+    parsed_args.enhancement_args = eval(parsed_args.enhancement_args)
     parsed_args.dataset_args = eval(parsed_args.dataset_args)
     return parsed_args
 

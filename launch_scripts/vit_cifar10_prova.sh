@@ -10,7 +10,7 @@ python main.py \
 --experiment=${pruner} \
 --experiment_name=CIFAR10/${arch}/${pretrain}/${wrr}/${pruner}/run${seed} \
 --experiment_args="{'weight_remaining_ratio': ${wrr}, 'rounds': 100, 'batch_limit': 2, 'aux_model': '${arch}_no_act', 'pretrain': '${pretrain}'}" \
---enhancement_args="{'enhancement': ${enhancement}, 'rank': ${rank}}" \
+--enhancement_args="{'enhancement': '${enhancement}', 'rank': ${rank}}" \
 --dataset=CIFAR10 \
 --dataset_args="{'root': 'data/CIFAR10'}" \
 --arch=${arch} \
