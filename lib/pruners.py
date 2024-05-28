@@ -119,6 +119,41 @@ class SNIP(Pruner):
     def __init__(self, masked_parameters):
         super(SNIP, self).__init__(masked_parameters)
 
+    def score_LoRAinspired(self, model, loss, dataloader, device):
+
+        # compute gradient
+        for batch_idx, data_tuple in enumerate(dataloader):
+            if batch_idx == CONFIG.experiment_args['batch_limit']: break
+            
+            if CONFIG.dataset in ['CIFAR10', 'CIFAR100', 'TinyImageNet', 'ImageNet', 'VOC2012']:
+                data, y = data_tuple
+                data, y = data.to(device), y.to(device)
+        
+                output = model(data).squeeze()
+        
+                loss(output, y).backward()
+
+        # calculate score |g * theta|
+        for m, p, A, B in self.masked_parameters:
+            # TODO HERE!!!!
+            if A not None:
+                self.scores[id(p)] = torch.zeros_like(p)
+                m.requires_grad = False 
+                p.requires_grad = True
+                if p.grad is not None:
+                    p.grad.data.zero_()
+                continue
+            self.scores[id(p)] = torch.clone(m.grad).detach().abs_()
+            p.grad.data.zero_()
+            m.grad.data.zero_()
+            m.requires_grad = False
+
+        # normalize score
+        all_scores = torch.cat([torch.flatten(v) for v in self.scores.values()])
+        norm = torch.sum(all_scores)
+        for _, p in self.masked_parameters:
+            self.scores[id(p)].div_(norm)
+
     def score(self, model, loss, dataloader, device):
 
         # allow masks to have gradient
