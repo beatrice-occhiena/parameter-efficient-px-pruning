@@ -44,6 +44,8 @@ class Linear(nn.Linear):
             rank = CONFIG.enhancement_args['rank']
             self.A = torch.ones([in_features, rank])*(1/math.sqrt(rank))
             self.B = torch.ones([rank, out_features])*(1/math.sqrt(rank))
+            self.A.to(CONFIG.device)
+            self.B.to(CONFIG.device)
 
     def forward(self, input):
         W = mm(self.weight, self.weight_mask, masking=self.masking)
@@ -98,6 +100,9 @@ class Conv2d(nn.Conv2d):
         if CONFIG.enhancement_args['enhancement'] == "LoRAinspired" and CONFIG.pruning_phase:
             BA = self.A @ self.B
             BA = BA.view(self.weight.shape)
+            BA.to(CONFIG.device)
+            print("Wdev: ", W.device)
+            print("BAdev: ", BA.device)
             W = W * BA
         
         if self.bias is not None:
@@ -167,8 +172,12 @@ class MultiheadAttention(nn.MultiheadAttention):
                 rank = CONFIG.enhancement_args['rank']
                 self.Ain = torch.ones([embed_dim, rank])*(1/math.sqrt(rank))
                 self.Bin = torch.ones([rank, 3 * embed_dim])*(1/math.sqrt(rank))
+                self.Ain.to(CONFIG.device)
+                self.Bin.to(CONFIG.device)
                 self.Aout = torch.ones([embed_dim, rank])*(1/math.sqrt(rank))
                 self.Bout = torch.ones([rank, embed_dim])*(1/math.sqrt(rank))
+                self.Aout.to(CONFIG.device)
+                self.Bout.to(CONFIG.device)
         
         if bias:
             self.in_proj_bias = Parameter(torch.empty(3 * embed_dim, **factory_kwargs))

@@ -142,6 +142,7 @@ class SNIP(Pruner):
         for m, p, A, B in self.masked_parameters:
             if A is not None and B is not None:
                 score = A.grad @ B.grad
+                print("A,B score: ", score.shape)
                 self.scores[id(p)] = torch.clone(score).detach().abs_()
                 A.grad.data.zero_()
                 B.grad.data.zero_()

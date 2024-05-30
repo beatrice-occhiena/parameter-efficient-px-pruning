@@ -39,12 +39,24 @@ def kaiming_normal_init(model):
 
 def activate_parameters_gradients(model, are_active: bool):
     for _, mod in model.named_modules():
-        if isinstance(mod, (nn.Linear, nn.MultiheadAttention, nn.Conv2d)):
+        if isinstance(mod, (nn.Linear, nn.Conv2d)):
             for pname, par in mod.named_parameters(recurse=False):
                 if "weight" in pname:
                     par.requires_grad = are_active
                     mod.A.requires_grad = not are_active
                     mod.B.requires_grad = not are_active
+        elif isinstance(mod,  nn.MultiheadAttention):
+            for pname, par in mod.named_parameters():
+                if pname == "in_proj_weight":
+                    print("grad in")
+                    par.requires_grad = are_active
+                    mod.Ain.requires_grad = not are_active
+                    mod.Bin.requires_grad = not are_active
+                elif "weight" in pname:
+                    print("grad out")
+                    par.requires_grad = are_active
+                    mod.Aout.requires_grad = not are_active
+                    mod.Bout.requires_grad = not are_active
 
 
 class Experiment:
@@ -104,7 +116,10 @@ class Experiment:
                 sparse = sparsity**((round + 1) / ROUNDS)
                 #print("sparse: ", sparse)
 
-                self.pruner.score(self.model, self.loss_fn, self.data['train'], CONFIG.device)
+                if CONFIG.enhancement_args['enhancement'] == "LoRAinspired":
+                    self.pruner.score_LoRAinspired(self.model, self.loss_fn, self.data['train'], CONFIG.device)
+                else: 
+                    self.pruner.score(self.model, self.loss_fn, self.data['train'], CONFIG.device)
 
                 self.pruner.mask(sparse, 'global')
                 remaining_params, total_params = self.pruner.stats()

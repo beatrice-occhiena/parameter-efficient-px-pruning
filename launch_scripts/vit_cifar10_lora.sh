@@ -1,8 +1,8 @@
 arch=vitB32
 pretrain=openai
-wrr=0.018 #[!! 0.64, 0.4096, 0.262, 0.1678, !! 0.107, 0.0688, 0.044, 0.0283, !! 0.018]
+wrr=0.64 #[!! 0.64, 0.4096, 0.262, 0.1678, !! 0.107, 0.0688, 0.044, 0.0283, !! 0.018]
 seed=42
-pruner=SynFlow #SNIP, SynFlow
+pruner=SNIP #SNIP, SynFlow
 enhancement=LoRAinspired
 rank=10
 
