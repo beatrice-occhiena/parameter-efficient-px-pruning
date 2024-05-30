@@ -3,6 +3,11 @@
 {'Acc': 0.9593999981880188, 'Loss': 0.0012369495643302798}
 SGD(parameters(self.model), lr=1e-4, momentum=0.9, weight_decay=1e-5)
 
+### CIFAR10/0.107/SNIP
+...
+SGD(parameters(self.model), lr=1e-4, momentum=0.9, weight_decay=1e-5)
+
+
 ### CIFAR10/0.018/SNIP
 [VAL @ Epoch=131]
 {'Acc': 0.628000020980835, 'Loss': 0.008192406326532365}
@@ -18,8 +23,9 @@ SGD(parameters(self.model), lr=1e-2, momentum=0.9, weight_decay=1e-5)
 SGD(parameters(self.model), lr=1e-4, momentum=0.9, weight_decay=1e-5)
 
 ### CIFAR10/0.107/SynFlow
-...
-SGD(parameters(self.model), lr=1e-3, momentum=0.9, weight_decay=1e-5)
+[VAL @ Epoch=140]
+{'Acc': 0.7172999978065491, 'Loss': 0.006875407713651657}
+SGD(parameters(self.model), lr=1e-4, momentum=0.9, weight_decay=1e-5)
 
 ### CIFAR10/0.018/SynFlow
 [VAL @ Epoch=95]

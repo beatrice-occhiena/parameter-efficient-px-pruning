@@ -168,7 +168,7 @@ class Experiment:
             if 'pretrain' in CONFIG.experiment_args:
                 milestones = [91, 136]
             #self.optimizer = torch.optim.SGD(parameters(self.model), lr=0.1, momentum=0.9, weight_decay=1e-4)
-            self.optimizer = torch.optim.SGD(parameters(self.model), lr=1e-3, momentum=0.9, weight_decay=1e-5)
+            self.optimizer = torch.optim.SGD(parameters(self.model), lr=1e-4, momentum=0.9, weight_decay=1e-5)
             self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=milestones, gamma=0.1)
             self.loss_fn = nn.CrossEntropyLoss()
 
