@@ -10,7 +10,7 @@ import wandb
 import copy
 
 from lib.pruners import Rand, SNIP, GraSP, SynFlow, SynFlowL2, NTKSAP, Mag, PX
-from lib.generator import masked_parameters, parameters, prunable
+from lib.generator import masked_parameters, masked_parameters_LoRAinspired, parameters, prunable
 
 from lib.models.lottery_resnet import resnet20
 from lib.models.lottery_vgg import vgg16_bn
@@ -39,8 +39,8 @@ def kaiming_normal_init(model):
 
 def activate_parameters_gradients(model, are_active: bool):
     for _, mod in model.named_modules():
-        for pname, par in model.named_parameters(recurse=False):
-            if isinstance(mod, (nn.Linear, nn.MultiheadAttention, nn.Conv2d)):
+        if isinstance(mod, (nn.Linear, nn.MultiheadAttention, nn.Conv2d)):
+            for pname, par in mod.named_parameters(recurse=False):
                 if "weight" in pname:
                     par.requires_grad = are_active
                     mod.A.requires_grad = not are_active
@@ -84,6 +84,9 @@ class Experiment:
             # Freeze the gradients for the decomposed parameters
             # Activate the gradients for A & B
             activate_parameters_gradients(self.model, are_active=False)
+            masked_parameters_it = masked_parameters_LoRAinspired(self.model)
+        else:
+            masked_parameters_it = masked_parameters(self.model)
 
         # Pruning strategy
         CONFIG.pruning_phase = True
@@ -91,7 +94,7 @@ class Experiment:
             ROUNDS = CONFIG.experiment_args['rounds']
             sparsity = CONFIG.experiment_args['weight_remaining_ratio']
 
-            self.pruner = eval(CONFIG.pruner)(masked_parameters(self.model))
+            self.pruner = eval(CONFIG.pruner)(masked_parameters_it)
 
             if CONFIG.pruner in ['SynFlow', 'SynFlowL2', 'PX']:
                 self.model.eval()
@@ -112,7 +115,7 @@ class Experiment:
             ROUNDS = CONFIG.experiment_args['rounds']
             sparsity = CONFIG.experiment_args['weight_remaining_ratio']
 
-            self.pruner = eval(CONFIG.pruner)(masked_parameters(self.model))
+            self.pruner = eval(CONFIG.pruner)(masked_parameters_it)
             
             initial_state = copy.deepcopy(self.model.state_dict())
 

@@ -1,3 +1,4 @@
+from re import A
 from lib import layers
 from lib import layers_vit
 
@@ -45,8 +46,37 @@ def masked_parameters(model, bias=False, batchnorm=False, residual=False):
     mask and parameter tensors.
     """
     for module in filter(lambda p: prunable(p, batchnorm, residual), model.modules()):
-        for mask, name_param in zip(masks(module), module.named_parameters(recurse=False)): #TODO:CHECK removed recurse=False
-            name, param = name_param
-            if "bias" not in name or bias is True:
-                #print(name, param.shape, mask.shape)
+        for mask, name_param in zip(masks(module), module.named_parameters(recurse=False)):
+            pname, param = name_param
+            if "bias" not in pname or bias is True:
                 yield mask, param
+
+def get_decomposition_matrices(module, pname):
+    r"""Returns the 2 decomposition matrices where they're applied.
+    """
+    if "bias" in pname:
+        return None, None
+    elif isinstance(module, (layers.Linear, layers_vit.Linear)):
+        return module.A, module.B
+    elif isinstance(module, (layers.Conv2d, layers_vit.Conv2d)):
+        return module.A, module.B
+    elif isinstance(module, (layers_vit.MultiheadAttention)):
+        if pname == "in_proj_weight":
+            return module.Ain, module.Bin
+        elif pname == "out_proj_weight":
+            return module.Aout, module.Bout
+    else:
+        return None, None
+
+def masked_parameters_LoRAinspired(model, bias=False, batchnorm=False, residual=False):
+    r"""Returns an iterator over models prunable parameters, yielding:
+     - the mask tensor
+     - the parameter tensors
+     - the 2 decomposition matrices where they're applied
+    """
+    for module in filter(lambda p: prunable(p, batchnorm, residual), model.modules()):
+        for mask, name_param in zip(masks(module), module.named_parameters(recurse=False)):
+            pname, param = name_param            
+            if "bias" not in pname or bias is True:
+                A, B = get_decomposition_matrices(module, pname)
+                yield mask, param, A, B

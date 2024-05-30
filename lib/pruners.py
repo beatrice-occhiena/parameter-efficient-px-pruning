@@ -119,6 +119,44 @@ class SNIP(Pruner):
     def __init__(self, masked_parameters):
         super(SNIP, self).__init__(masked_parameters)
 
+    def score_LoRAinspired(self, model, loss, dataloader, device):
+
+        # allow masks to have gradient
+        for m, _, A, B in self.masked_parameters:
+            if A is None and B is None:
+                m.requires_grad = True
+
+        # compute gradient
+        for batch_idx, data_tuple in enumerate(dataloader):
+            if batch_idx == CONFIG.experiment_args['batch_limit']: break
+            
+            if CONFIG.dataset in ['CIFAR10', 'CIFAR100', 'TinyImageNet', 'ImageNet', 'VOC2012']:
+                data, y = data_tuple
+                data, y = data.to(device), y.to(device)
+        
+                output = model(data).squeeze()
+        
+                loss(output, y).backward()
+
+        # calculate score |g * theta|
+        for m, p, A, B in self.masked_parameters:
+            if A is not None and B is not None:
+                score = A.grad @ B.grad
+                self.scores[id(p)] = torch.clone(score).detach().abs_()
+                A.grad.data.zero_()
+                B.grad.data.zero_()
+            else: 
+                self.scores[id(p)] = torch.clone(m.grad).detach().abs_()
+                p.grad.data.zero_()
+                m.grad.data.zero_()
+                m.requires_grad = False
+
+        # normalize score
+        all_scores = torch.cat([torch.flatten(v) for v in self.scores.values()])
+        norm = torch.sum(all_scores)
+        for _, p, _, _ in self.masked_parameters:
+            self.scores[id(p)].div_(norm)
+
     def score(self, model, loss, dataloader, device):
 
         # allow masks to have gradient
@@ -164,6 +202,9 @@ class GraSP(Pruner):
         super(GraSP, self).__init__(masked_parameters)
         self.temp = 200
         self.eps = 1e-10
+
+    def score_LoRAinspired(self, model, loss, dataloader, device):
+        raise NotImplementedError
 
     def score(self, model, loss, dataloader, device):
 
@@ -219,6 +260,9 @@ class GraSP(Pruner):
 class SynFlow(Pruner):
     def __init__(self, masked_parameters):
         super(SynFlow, self).__init__(masked_parameters)
+
+    def score_LoRAinspired(self, model, loss, dataloader, device):
+        raise NotImplementedError
 
     def score(self, model, loss, dataloader, device):
       
