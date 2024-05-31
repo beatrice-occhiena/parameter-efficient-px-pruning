@@ -8,7 +8,7 @@ rank=10
 
 python main.py \
 --experiment=${pruner} \
---experiment_name=CIFAR10/${arch}/${pretrain}/${wrr}/${pruner}/run${seed} \
+--experiment_name=CIFAR10/${arch}/${pretrain}/${enhancement}/${wrr}/${pruner}/run${seed} \
 --experiment_args="{'weight_remaining_ratio': ${wrr}, 'rounds': 100, 'batch_limit': 2, 'aux_model': '${arch}_no_act', 'pretrain': '${pretrain}'}" \
 --enhancement_args="{'enhancement': '${enhancement}', 'rank': ${rank}}" \
 --dataset=CIFAR10 \

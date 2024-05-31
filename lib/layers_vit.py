@@ -42,10 +42,10 @@ class Linear(nn.Linear):
         # LoRA inspired enhancement for parameter efficiency
         if CONFIG.enhancement_args['enhancement'] == "LoRAinspired":
             rank = CONFIG.enhancement_args['rank']
-            self.A = torch.ones([in_features, rank])*(1/math.sqrt(rank))
-            self.B = torch.ones([rank, out_features])*(1/math.sqrt(rank))
-            self.A.to(CONFIG.device)
-            self.B.to(CONFIG.device)
+            self.A = torch.ones([rank, in_features])*(1/math.sqrt(rank))
+            self.B = torch.ones([out_features, rank])*(1/math.sqrt(rank))
+            self.A = self.A.to(CONFIG.device)
+            self.B = self.B.to(CONFIG.device)
 
     def forward(self, input):
         W = mm(self.weight, self.weight_mask, masking=self.masking)
@@ -56,7 +56,7 @@ class Linear(nn.Linear):
 
         # LoRA inspired enhancement for parameter efficiency
         if CONFIG.enhancement_args['enhancement'] == "LoRAinspired" and CONFIG.pruning_phase:
-            BA = self.A @ self.B
+            BA = self.B @ self.A
             W = W * BA
             
         return F.linear(input, W, b)
@@ -83,8 +83,10 @@ class Conv2d(nn.Conv2d):
         # LoRA inspired enhancement for parameter efficiency
         if CONFIG.enhancement_args['enhancement'] == "LoRAinspired":
             rank = CONFIG.enhancement_args['rank']
-            self.A = torch.ones([in_channels * kernel_size[0], rank])*(1/math.sqrt(rank))
-            self.B = torch.ones([rank, kernel_size[1] * out_channels])*(1/math.sqrt(rank))
+            self.A = torch.ones([rank, in_channels * kernel_size[0]])*(1/math.sqrt(rank))
+            self.B = torch.ones([kernel_size[1] * out_channels, rank])*(1/math.sqrt(rank))
+            self.A = self.A.to(CONFIG.device)
+            self.B = self.B.to(CONFIG.device)
 
     def _conv_forward(self, input, weight, bias):
         if self.padding_mode != 'zeros':
@@ -98,11 +100,8 @@ class Conv2d(nn.Conv2d):
         W = mm(self.weight, self.weight_mask, masking=self.masking)
         # LoRA inspired enhancement for parameter efficiency
         if CONFIG.enhancement_args['enhancement'] == "LoRAinspired" and CONFIG.pruning_phase:
-            BA = self.A @ self.B
+            BA = self.B @ self.A
             BA = BA.view(self.weight.shape)
-            BA.to(CONFIG.device)
-            print("Wdev: ", W.device)
-            print("BAdev: ", BA.device)
             W = W * BA
         
         if self.bias is not None:
@@ -170,14 +169,11 @@ class MultiheadAttention(nn.MultiheadAttention):
             # LoRA inspired enhancement for parameter efficiency
             if CONFIG.enhancement_args['enhancement'] == "LoRAinspired":
                 rank = CONFIG.enhancement_args['rank']
-                self.Ain = torch.ones([embed_dim, rank])*(1/math.sqrt(rank))
-                self.Bin = torch.ones([rank, 3 * embed_dim])*(1/math.sqrt(rank))
-                self.Ain.to(CONFIG.device)
-                self.Bin.to(CONFIG.device)
-                self.Aout = torch.ones([embed_dim, rank])*(1/math.sqrt(rank))
-                self.Bout = torch.ones([rank, embed_dim])*(1/math.sqrt(rank))
-                self.Aout.to(CONFIG.device)
-                self.Bout.to(CONFIG.device)
+                
+                self.A = torch.ones([rank, embed_dim])*(1/math.sqrt(rank))
+                self.B = torch.ones([3 * embed_dim, rank])*(1/math.sqrt(rank))
+                self.A = self.A.to(CONFIG.device)
+                self.B = self.B.to(CONFIG.device)
         
         if bias:
             self.in_proj_bias = Parameter(torch.empty(3 * embed_dim, **factory_kwargs))
@@ -357,8 +353,8 @@ class MultiheadAttention(nn.MultiheadAttention):
         else:
             # LoRA inspired enhancement for parameter efficiency
             if CONFIG.enhancement_args['enhancement'] == "LoRAinspired" and CONFIG.pruning_phase:
-                BAin = self.Ain @ self.Bin
-                BAout = self.Aout @ self.Bout
+                BAin = self.B @ self.A
+                BAout = self.out_proj.B @ self.out_proj.A
                 attn_output, attn_output_weights = F.multi_head_attention_forward(
                     query, key, value, self.embed_dim, self.num_heads,
                     mm(self.in_proj_weight, self.in_proj_weight_mask, masking=self.masking) * BAin, mm(self.in_proj_bias, self.in_proj_bias_mask, masking=self.masking),

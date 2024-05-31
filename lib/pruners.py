@@ -36,16 +36,20 @@ class Pruner:
         if not k < 1:
             threshold, _ = torch.kthvalue(global_scores, k)
             #print("threshold value: ", threshold)
-            for mask, param in self.masked_parameters:
+            for mask, param, *rest in self.masked_parameters:
                 score = self.scores[id(param)] 
                 zero = torch.tensor([0.]).to(mask.device)
                 one = torch.tensor([1.]).to(mask.device)
+                
+                if score.shape != mask.shape: # For LoRA inspired in Conv2d layer
+                    score = score.view(mask.shape)
+
                 mask.copy_(torch.where(score <= threshold, zero, one))
     
     def _local_mask(self, sparsity):
         r"""Updates masks of model with scores by sparsity level parameter-wise.
         """
-        for mask, param in self.masked_parameters:
+        for mask, param, *rest in self.masked_parameters:
             score = self.scores[id(param)]
             k = int((1.0 - sparsity) * score.numel())
             if not k < 1:
@@ -66,18 +70,18 @@ class Pruner:
     def apply_mask(self):
         r"""Applies mask to prunable parameters.
         """
-        for mask, param in self.masked_parameters:
+        for mask, param, *rest in self.masked_parameters:
             param.mul_(mask)
 
     def alpha_mask(self, alpha):
         r"""Set all masks to alpha in model.
         """
-        for mask, _ in self.masked_parameters:
+        for mask, _, *rest in self.masked_parameters:
             mask.fill_(alpha)
 
     # Based on https://github.com/facebookresearch/open_lth/blob/master/utils/tensor_utils.py#L43
     def shuffle(self):
-        for mask, param in self.masked_parameters:
+        for mask, param, *rest in self.masked_parameters:
             shape = mask.shape
             perm = torch.randperm(mask.nelement())
             mask.copy_(mask.reshape(-1)[perm].reshape(shape))
@@ -90,7 +94,7 @@ class Pruner:
         r"""Returns remaining and total number of prunable parameters.
         """
         remaining_params, total_params = 0, 0 
-        for mask, _ in self.masked_parameters:
+        for mask, _, *rest in self.masked_parameters:
              remaining_params += mask.detach().cpu().numpy().sum()
              total_params += mask.numel()
         return remaining_params, total_params
@@ -141,12 +145,11 @@ class SNIP(Pruner):
         # calculate score |g * theta|
         for m, p, A, B in self.masked_parameters:
             if A is not None and B is not None:
-                score = A.grad @ B.grad
-                print("A,B score: ", score.shape)
+                score = B.grad @ A.grad
                 self.scores[id(p)] = torch.clone(score).detach().abs_()
                 A.grad.data.zero_()
                 B.grad.data.zero_()
-            else: 
+            else:
                 self.scores[id(p)] = torch.clone(m.grad).detach().abs_()
                 p.grad.data.zero_()
                 m.grad.data.zero_()

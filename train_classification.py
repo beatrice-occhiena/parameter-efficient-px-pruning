@@ -39,25 +39,12 @@ def kaiming_normal_init(model):
 
 def activate_parameters_gradients(model, are_active: bool):
     for _, mod in model.named_modules():
-        if isinstance(mod, (nn.Linear, nn.Conv2d)):
+        if isinstance(mod, (nn.Linear, nn.Conv2d, nn.MultiheadAttention)):
             for pname, par in mod.named_parameters(recurse=False):
                 if "weight" in pname:
                     par.requires_grad = are_active
                     mod.A.requires_grad = not are_active
                     mod.B.requires_grad = not are_active
-        elif isinstance(mod,  nn.MultiheadAttention):
-            for pname, par in mod.named_parameters():
-                if pname == "in_proj_weight":
-                    print("grad in")
-                    par.requires_grad = are_active
-                    mod.Ain.requires_grad = not are_active
-                    mod.Bin.requires_grad = not are_active
-                elif "weight" in pname:
-                    print("grad out")
-                    par.requires_grad = are_active
-                    mod.Aout.requires_grad = not are_active
-                    mod.Bout.requires_grad = not are_active
-
 
 class Experiment:
 
@@ -67,6 +54,7 @@ class Experiment:
                                  'NTKSAP', 'Mag', 'PX', 'IMP'], f'"{CONFIG.pruner}" pruning strategy not available!'
         assert CONFIG.arch in ['resnet20', 'vgg16_bn', 'tinyimagenet_resnet18', 
                                'resnet50', 'vitB32'], f'"{CONFIG.arch}" architecture not available!'
+        assert CONFIG.enhancement_args['enhancement'] in ['None', 'LoRAinspired', 'IA3inspired']
 
         # Initialize model
         if "vit" in CONFIG.arch:
@@ -92,9 +80,10 @@ class Experiment:
         self._init_meters()
 
         # Enhancement strategy
-        if CONFIG.enhancement_args['enhancement'] in ("LoRAinspired","IA3inspired"):
+        if CONFIG.enhancement_args['enhancement'] == "LoRAinspired":
             # Freeze the gradients for the decomposed parameters
             # Activate the gradients for A & B
+            logging.info(f'Parameter efficient pruning enhanced with LoRAinspired method and rank {CONFIG.enhancement_args['rank']}')
             activate_parameters_gradients(self.model, are_active=False)
             masked_parameters_it = masked_parameters_LoRAinspired(self.model)
         else:

@@ -56,15 +56,8 @@ def get_decomposition_matrices(module, pname):
     """
     if "bias" in pname:
         return None, None
-    elif isinstance(module, (layers.Linear, layers_vit.Linear)):
+    elif isinstance(module, (layers.Linear, layers_vit.Linear, layers.Conv2d, layers_vit.Conv2d, layers_vit.MultiheadAttention)):
         return module.A, module.B
-    elif isinstance(module, (layers.Conv2d, layers_vit.Conv2d)):
-        return module.A, module.B
-    elif isinstance(module, (layers_vit.MultiheadAttention)):
-        if pname == "in_proj_weight":
-            return module.Ain, module.Bin
-        elif pname == "out_proj_weight":
-            return module.Aout, module.Bout
     else:
         return None, None
 
