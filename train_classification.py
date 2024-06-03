@@ -83,7 +83,8 @@ class Experiment:
         if CONFIG.enhancement_args['enhancement'] == "LoRAinspired":
             # Freeze the gradients for the decomposed parameters
             # Activate the gradients for A & B
-            logging.info(f'Parameter efficient pruning enhanced with LoRAinspired method and rank {CONFIG.enhancement_args['rank']}')
+            rank = CONFIG.enhancement_args['rank']
+            logging.info(f'Parameter efficient pruning enhanced with LoRAinspired method and rank {rank}')
             activate_parameters_gradients(self.model, are_active=False)
             masked_parameters_it = masked_parameters_LoRAinspired(self.model)
         else:

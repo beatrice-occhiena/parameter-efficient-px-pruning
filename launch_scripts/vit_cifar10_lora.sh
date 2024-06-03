@@ -4,7 +4,7 @@ wrr=0.64 #[!! 0.64, 0.4096, 0.262, 0.1678, !! 0.107, 0.0688, 0.044, 0.0283, !! 0
 seed=42
 pruner=SNIP #SNIP, SynFlow
 enhancement=LoRAinspired
-rank=10
+rank=20
 
 python main.py \
 --experiment=${pruner} \
