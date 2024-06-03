@@ -266,7 +266,47 @@ class SynFlow(Pruner):
         super(SynFlow, self).__init__(masked_parameters)
 
     def score_LoRAinspired(self, model, loss, dataloader, device):
-        raise NotImplementedError
+        
+        @torch.no_grad()
+        def linearize(model):
+            # model.double()
+            signs = {}
+            for name, param in model.state_dict().items():
+                signs[name] = torch.sign(param)
+                param.abs_()
+            return signs
+
+        @torch.no_grad()
+        def nonlinearize(model, signs):
+            # model.float()
+            for name, param in model.state_dict().items():
+                param.mul_(signs[name])
+        
+        signs = linearize(model)
+
+        data_tuple = next(iter(dataloader))
+        if CONFIG.dataset in ['CIFAR10', 'CIFAR100', 'TinyImageNet', 'ImageNet', 'VOC2012']:
+            data, y = data_tuple
+
+        input_dim = list(data[0,:].shape)
+        input = torch.ones([1] + input_dim).to(device)#, dtype=torch.float64).to(device)
+
+        output = model(input)
+
+        torch.sum(output).backward()
+
+        for _, p, A, B in self.masked_parameters:
+            if A is not None and B is not None:
+                score = B.grad @ A.grad
+                self.scores[id(p)] = torch.clone(score).detach().abs_()
+                A.grad.data.zero_()
+                B.grad.data.zero_()
+            else: 
+                self.scores[id(p)] = torch.clone(p.grad * p).detach().abs_()
+                p.grad.data.zero_()
+
+        nonlinearize(model, signs)
+
 
     def score(self, model, loss, dataloader, device):
       
