@@ -1,6 +1,17 @@
 ### CIFAR10/0.64/SNIP
+[VAL @ Epoch=0]
+{'Acc': 0.8797000050544739, 'Loss': 0.002938136065006256}
+...
 [VAL @ Epoch=14]
 {'Acc': 0.9593999981880188, 'Loss': 0.0012369495643302798}
+SGD(parameters(self.model), lr=1e-4, momentum=0.9, weight_decay=1e-5)
+
+LoRA rank 20
+[VAL @ Epoch=0]
+{'Acc': 0.5993000268936157, 'Loss': 0.008867044925689698}
+...
+[VAL @ Epoch=90]
+{'Acc': 0.9060999751091003, 'Loss': 0.0036354976177215576}
 SGD(parameters(self.model), lr=1e-4, momentum=0.9, weight_decay=1e-5)
 
 ### CIFAR10/0.107/SNIP
